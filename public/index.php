@@ -17,7 +17,5 @@
   //  ->handleRequest(Request::capture());
 
 <?php
-
 phpinfo();
-
-<?
+?>
