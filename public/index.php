@@ -17,5 +17,7 @@
   //  ->handleRequest(Request::capture());
 
 <?php
-phpinfo();
+//phpinfo();
+
+echo "hello sirji";
 ?>
