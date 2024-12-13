@@ -1,1 +1,41 @@
+name: Auto Pull Latest Code
 
+on:
+  push:
+    branches:
+      - main  # This will trigger the workflow on any push to the main branch
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+    # Step 1: Checkout the code to run the action
+    - name: Checkout code
+      uses: actions/checkout@v3
+
+    # Step 2: Set up SSH for deployment
+    - name: Set up SSH key
+      uses: webfactory/ssh-agent@v0.5.3
+      with:
+        ssh-private-key: ${{ secrets.SSH_KEY }}
+
+    # Step 3: Configure SSH to prevent host verification prompts
+    - name: Configure SSH known hosts
+      run: |
+        mkdir -p ~/.ssh
+        ssh-keyscan -H ${{ secrets.SSH_HOST }} >> ~/.ssh/known_hosts
+
+    # Step 4: SSH into the server and pull the latest changes into /var/www/testapp
+    - name: Pull latest code and deploy
+      run: |
+        SSH_HOST=${{ secrets.SSH_HOST }}
+        SSH_USERNAME=${{ secrets.SSH_USERNAME }}
+        
+        ssh -o StrictHostKeyChecking=no $SSH_USERNAME@$SSH_HOST << 'EOF'
+          # Navigate to the Laravel project directory
+          cd /var/www/testapp
+
+          # Pull the latest changes from the remote main branch
+          git pull origin main
+        EOF
